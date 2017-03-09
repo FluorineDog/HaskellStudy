@@ -1,67 +1,55 @@
 module Splay (
   Splay,
   insert,
-  lookup, 
-
+  remove,
+  find
 )where
-  import qualified Data.List as List 
   type Key = Int
   type Value = String
   data Splay = Leaf 
-    | Node {left::Splay, key::Key, value::Key, right::Splay}
+    | Node {left::Splay, key::Key, value::Value, right::Splay}
   
   insert::Key->Value->Splay->Splay
-  insert _ _ tr = tr
+  insert rawKey rawValue tr = 
+    let Node{left = l, key = k, value = v, right = r} = reach rawKey tr
+    in case compare rawKey k of 
+      EQ->Node{left = l, key = rawKey, value = rawValue, right = r} 
+      LT->Node{left = l, key = rawKey, value = rawValue, right = newr}
+        where newr = Node{left = Leaf, key = k, value = v, right = r}
+      GT->Node{left = newl, key = rawKey, value = rawValue, right = r}
+        where newl = Node{left = l, key = k, value = v, right = Leaf}
+    
+  remove::Key->Splay->Splay
+  remove rawKey tr = 
+    let tr'@Node{left = l, key = k, value = _, right = r} = reach rawKey tr
+    in case compare rawKey k of 
+    LT -> tr'
+    GT -> tr'
+    EQ ->( 
+      case reach rawKey r of 
+        Leaf -> l 
+        Node{left = Leaf, key = k2, value = v2, right = r2} -> newroot
+          where 
+            newroot = Node{left = l, key = k2, value = v2, right = r2}
+        _ -> error "asd"
+      )
+
+  
+  find::Key->Splay->Splay
+  find = reach
 
   reach::Key->Splay->Splay
   reach _ Leaf = Leaf
-  reach targetkey tr@Node {left=l, key=k, value=v, right=r} = 
-    case compare targetkey k of 
-      LT -> (
-        case l of 
-          Leaf -> tr
-          Node {left=l2, key=k2, value=v2, right=r2} ->
-            case compare targetkey k2 of 
-            LT -> 
-              --zig zig
-              case reach targetkey l2 of 
-                Leaf -> newroot
-                  where 
-                    newroot = Node{left = Leaf, key=k2, value=v2, right=newr}
-                    newr = Node{left=r2, key=k, value=v, right=r}
-                Node{left=l3, key=k3, value=v3, right=r3} -> newroot
-                  where
-                    newroot = Node{left = l3, key = k3, value = v3, right = newr1} 
-                    newr1 =   Node{left = r3, key = k2, value = v2, right = newr2}
-                    newr2 =   Node{left = r2, key = k , value = v , right = r }
-            EQ -> newroot 
-              -- shortcut
-              where 
-                newroot = Node{left = l2, key = k2, value = v2, right = newr}
-                newr =    Node{left = r2, key = k , value = v , right = r }
-            GT ->
-              -- zig-zag 
-              case reach targetkey r2 of 
-                Leaf -> newroot
-                  where
-                    newroot = Node{left = l2, key = k2, value = v2, right = newr}
-                    newr =  Node{left = Leaf, key = k , value = v , right = r}
-                Node{left = l3, key = k3, value = v3, right = r3} -> newroot
-                  where 
-                    newroot = Node{left = newl, key = k3, value = v3, right = newr}
-                    newl = Node{left = l2, key = k2, value = v2, right=l3}
-                    newr = Node{left = r3, key = k, value = v, right=r}
-        )
-      EQ -> tr
-
+  reach targetKey tr@Node {left=l, key=k, value=v, right=r} = 
+    case compare targetKey k of 
       GT -> (
         case r of 
           Leaf -> tr
           Node {left=l2, key=k2, value=v2, right=r2} ->
-            case compare targetkey k2 of 
+            case compare targetKey k2 of 
             GT -> 
               --zig zig
-              case reach targetkey r2 of 
+              case reach targetKey r2 of 
                 Leaf -> newroot
                   where 
                     newroot = Node{left = newl, key=k2, value=v2, right=Leaf}
@@ -78,7 +66,7 @@ module Splay (
                 newl =    Node{left = l, key = k , value = v , right = l2}
             LT ->
               -- zig-zag 
-              case reach targetkey l2 of 
+              case reach targetKey l2 of 
                 Leaf -> newroot
                   where
                     newroot = Node{left = newl, key = k2, value = v2, right = r2}
@@ -90,5 +78,43 @@ module Splay (
                     newr = Node{left = r3, key = k2, value = v2, right = r2}
         )
  
+      EQ -> tr
+      LT -> (
+        case l of 
+          Leaf -> tr
+          Node {left=l2, key=k2, value=v2, right=r2} ->
+            case compare targetKey k2 of 
+            LT -> 
+              --zig zig
+              case reach targetKey l2 of 
+                Leaf -> newroot
+                  where 
+                    newroot = Node{left = Leaf, key=k2, value=v2, right=newr}
+                    newr = Node{left=r2, key=k, value=v, right=r}
+                Node{left=l3, key=k3, value=v3, right=r3} -> newroot
+                  where
+                    newroot = Node{left = l3, key = k3, value = v3, right = newr1} 
+                    newr1 =   Node{left = r3, key = k2, value = v2, right = newr2}
+                    newr2 =   Node{left = r2, key = k , value = v , right = r }
+            EQ -> newroot 
+              -- shortcut
+              where 
+                newroot = Node{left = l2, key = k2, value = v2, right = newr}
+                newr =    Node{left = r2, key = k , value = v , right = r }
+            GT ->
+              -- zig-zag 
+              case reach targetKey r2 of 
+                Leaf -> newroot
+                  where
+                    newroot = Node{left = l2, key = k2, value = v2, right = newr}
+                    newr =  Node{left = Leaf, key = k , value = v , right = r}
+                Node{left = l3, key = k3, value = v3, right = r3} -> newroot
+                  where 
+                    newroot = Node{left = newl, key = k3, value = v3, right = newr}
+                    newl = Node{left = l2, key = k2, value = v2, right=l3}
+                    newr = Node{left = r3, key = k, value = v, right=r}
+        )
+ 
+
         
     
