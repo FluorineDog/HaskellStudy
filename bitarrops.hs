@@ -16,7 +16,7 @@ revBlock::Block->Block
 revBlock (l, r) = (r, l)
 
 revLayer::Layer->Layer
-revLayer (b1, b2, b3) = (revBlock b1, revBlock b2, revblock b3)
+revLayer (b1, b2, b3) = (revBlock b1, revBlock b2, revBlock b3)
 
 mergeLayer::Layer->Layer->Layer
 mergeLayer (x1, x2, x3) (y1, y2, y3)
@@ -25,5 +25,3 @@ mergeLayer (x1, x2, x3) (y1, y2, y3)
         (r, l) = merge x3 y1
         rev = (l, r)
         mid = x2 `merge` rev `merge` y2
-
-

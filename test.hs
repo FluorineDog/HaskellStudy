@@ -1,19 +1,14 @@
-import qualified Data.Map as Map
+import Control.Monad
+import Data.Char
+import System.Environment
 
-main::IO()
-main = print $ Map.lookup "betty" phoneBook
-phoneBook = Map.fromListWith (\x y -> "$" ++ x++" "++ y++ "#")
-    [("betty","555-2938")  
-    ,("betty","342-2492")  
-    ,("bonnie","452-2928")  
-    ,("patsy","393-2928")  
-    ,("patsy","493-2928")  
-    ,("patsy","793-2928")  
-    ,("patsy","493-2928")  
-    ,("patsy","943-2929")  
-    ,("patsy","827-9162")  
-    ,("lucille","205-2928")  
-    ,("wendy","939-8282")  
-    ,("penny","853-2492")  
-    ,("penny","555-2111")  
-    ]
+import System.Random  
+import Data.List  
+  
+main = do  
+    gen <- getStdGen  
+    let randomChars = randomRs ('a','z') gen  
+        (first20, rest) = splitAt 20 randomChars  
+        (second20, _) = splitAt 20 rest  
+    putStrLn first20  
+    putStr second20  
