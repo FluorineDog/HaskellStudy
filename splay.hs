@@ -50,7 +50,7 @@ module Splay (
                   where 
                     newroot = Node{left = newl, key = k3, value = v3, right = newr}
                     newl = Node{left = l2, key = k2, value = v2, right=l3}
-                    newr = Node{left = r2, key = k, value = v, right=r}
+                    newr = Node{left = r3, key = k, value = v, right=r}
         )
       EQ -> tr
 
@@ -64,30 +64,30 @@ module Splay (
               case reach targetkey r2 of 
                 Leaf -> newroot
                   where 
-                    newroot = Node{left = Leaf, key=k2, value=v2, right=newr}
-                    newr = Node{left=r2, key=k, value=v, right=r}
+                    newroot = Node{left = newl, key=k2, value=v2, right=Leaf}
+                    newl = Node{left=l, key=k, value=v, right=l2}
                 Node{left=l3, key=k3, value=v3, right=r3} -> newroot
                   where
-                    newroot = Node{left = l3, key = k3, value = v3, right = newr1} 
-                    newr1 =   Node{left = r3, key = k2, value = v2, right = newr2}
-                    newr2 =   Node{left = r2, key = k , value = v , right = r }
+                    newroot = Node{left = newl1, key = k3, value = v3, right = r3} 
+                    newl1 =   Node{left = newl2, key = k2, value = v2, right = l3}
+                    newl2 =   Node{left = l, key = k , value = v , right = l2}
             EQ -> newroot 
               -- shortcut
               where 
-                newroot = Node{left = l2, key = k2, value = v2, right = newr}
-                newr =    Node{left = r2, key = k , value = v , right = r }
+                newroot = Node{left = newl, key = k2, value = v2, right = r2}
+                newl =    Node{left = l, key = k , value = v , right = l2}
             LT ->
               -- zig-zag 
               case reach targetkey l2 of 
                 Leaf -> newroot
                   where
-                    newroot = Node{left = l2, key = k2, value = v2, right = newr}
-                    newr =  Node{left = Leaf, key = k , value = v , right = r}
+                    newroot = Node{left = newl, key = k2, value = v2, right = r2}
+                    newl =  Node{left = l, key = k , value = v , right = Leaf}
                 Node{left = l3, key = k3, value = v3, right = r3} -> newroot
                   where 
                     newroot = Node{left = newl, key = k3, value = v3, right = newr}
-                    newl = Node{left = l2, key = k2, value = v2, right=l3}
-                    newr = Node{left = r2, key = k, value = v, right=r}
+                    newl = Node{left = l, key = k, value = v, right = l3}
+                    newr = Node{left = r3, key = k2, value = v2, right = r2}
         )
  
         
