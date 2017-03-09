@@ -2,13 +2,17 @@ module Splay (
   Splay,
   insert,
   remove,
-  find
+  find, 
+  empty,
 )where
   type Key = Int
   type Value = String
   data Splay = Leaf 
     | Node {left::Splay, key::Key, value::Value, right::Splay}
   
+  empty::Splay
+  empty = Leaf
+
   insert::Key->Value->Splay->Splay
   insert rawKey rawValue tr = 
     let Node{left = l, key = k, value = v, right = r} = reach rawKey tr
