@@ -2,26 +2,39 @@ module Splay (
   Splay,
   insert,
   remove,
+  peek,
   find, 
+  nullTr,
   empty,
 )where
   type Key = Int
   type Value = String
   data Splay = Leaf 
-    | Node {left::Splay, key::Key, value::Value, right::Splay}
+    | Node {left::Splay, key::Key, value::Value, right::Splay} deriving (Show)
   
   empty::Splay
   empty = Leaf
 
+  nullTr::Splay->Bool
+  nullTr Leaf = True
+  nullTr _ = False
+
+  peek::Splay->(Key, Value)
+  peek Leaf = error "fuck you"
+  peek (Node _ k v _) = (k,v)
+
   insert::Key->Value->Splay->Splay
   insert rawKey rawValue tr = 
-    let Node{left = l, key = k, value = v, right = r} = reach rawKey tr
-    in case compare rawKey k of 
+    case reach rawKey tr of 
+    Leaf->Node{left = Leaf, key = rawKey, value = rawValue, right = Leaf} 
+    Node{left = l, key = k, value = v, right = r} ->     
+      case compare rawKey k of 
       EQ->Node{left = l, key = rawKey, value = rawValue, right = r} 
       LT->Node{left = l, key = rawKey, value = rawValue, right = newr}
         where newr = Node{left = Leaf, key = k, value = v, right = r}
       GT->Node{left = newl, key = rawKey, value = rawValue, right = r}
         where newl = Node{left = l, key = k, value = v, right = Leaf}
+    
     
   remove::Key->Splay->Splay
   remove rawKey tr = 
