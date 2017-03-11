@@ -19,9 +19,9 @@ module Splay (
   nullTr Leaf = True
   nullTr _ = False
 
-  peek::Splay->(Key, Value)
-  peek Leaf = error "fuck you"
-  peek (Node _ k v _) = (k,v)
+  peek::Splay->Maybe(Key, Value)
+  peek Leaf = Nothing
+  peek (Node _ k v _) = Just (k,v)
 
   insert::Key->Value->Splay->Splay
   insert rawKey rawValue tr = 
@@ -131,7 +131,4 @@ module Splay (
                     newl = Node{left = l2, key = k2, value = v2, right=l3}
                     newr = Node{left = r3, key = k, value = v, right=r}
         )
- 
 
-        
-    

@@ -5,22 +5,22 @@ main::IO()
 main = do
   return ()
   let 
-    maxRange = 10000::Int
-    len = 100
-    seed = mkStdGen 100
+    maxRange = 10000000::Int
+    len = 1000000
+    seed = mkStdGen 0
     seqi = take len $ randomRs (0, maxRange) seed
-    splaytr = foldr (\a->insert a $ show a) empty seqi
-  recur splaytr
+    splaytr = foldr (\a->insert a $ "") empty seqi
+    sumi = recur 0 splaytr
+  print $ seqi !! (len-1) 
+  print $ seqi !! 0 
+  print sumi
   return ()
     where
-      recur tr 
-        | nullTr tr = return ()
-        | otherwise = do 
-          print x
-          recur tr''
-            where 
-              tr' = find 0 tr
-              x = peek tr'
-              tr'' = remove (fst x) tr'
-           
-
+      recur::Integer->Splay->Integer
+      recur x0 tr = let tr' = find 1000000 tr in
+        case peek tr' of 
+          Nothing -> x0
+          Just (x, _) ->
+            recur (x0+ toInteger x) tr''
+              where 
+                tr'' = remove x tr'
